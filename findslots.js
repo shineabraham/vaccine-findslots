@@ -1,27 +1,43 @@
 var request = require('request');
 const moment = require('moment');
+const cron = require('node-cron'); 
+const send_email = require('./sendemail');
 require('dotenv').config()
 
 //testing with todays date
-let today = moment();
-const DATE = today.format('DD-MM-YYYY')
+// let today = moment();
+// const DATE = today.format('DD-MM-YYYY')
+
 
 
 //reading variables from .env
+const EMAIL = process.env.EMAIL
 const PIN = process.env.PIN
 const AGE = process.env.AGE
+
+//cron function scheduled every minuite to check the availablity for next 10 days
+async function main(){
+    try {
+        cron.schedule('* * * * *', async () => {
+             await checkAvailability();
+        });
+    } catch (e) {
+        console.log('an error occured: ' + JSON.stringify(e, null, 2));
+        throw e;
+    }
+}
 
 // function to check availability in the next 10 days from the days returned by function fetchNext10Days
 async function checkAvailability() {
 
-    let datesArray = await fetchNext10Days();
+    let datesArray = await getNext10Days();
     datesArray.forEach(date => {
         getSlotsForDate(date);
     })
 }
 
 //function to fetch the next 10 days
-async function fetchNext10Days(){
+async function getNext10Days(){
     let dates = [];
     let today = moment();
     for(let i = 0 ; i < 10 ; i ++ ){
@@ -60,10 +76,27 @@ function getSlotsForDate(DATE) {
 	      // 	console.log('The vaccine centers open are :',validSlots[w].name, 'address : ', validSlots[w].address, 'centre id : ', validSlots[w].center_id)
 	      // }
 	      console.log('########################')
-	      // notifyMe(validSlots);
+	      notifyMe(validSlots);
 	    }
 	  }
 	});
 }
-// getSlotsForDate(DATE);
-checkAvailability()
+
+
+//function to call sendemail.js with parameters
+async function notifyMe(validSlots){
+    let slotDetails = JSON.stringify(validSlots, null, '\t');
+    console.log('reached 0');
+    send_email.sendEmail(EMAIL, 'VACCINE AVAILABLE', slotDetails, (err, result) => {
+        if(err) {
+            console.error({err});
+        }
+    })
+};
+
+
+
+// main function
+main()
+    .then(() => {console.log('Vaccine availability checker started.');});
+
