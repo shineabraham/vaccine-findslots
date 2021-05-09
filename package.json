@@ -1,0 +1,22 @@
+{
+  "name": "vaccine-findslots",
+  "version": "1.0.0",
+  "description": "This is to find slots for vaccine in nearby vaccination centers using the CoWin Open API",
+  "main": "findslots.js",
+  "scripts": {
+    "test": "node findslots.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shineabraham/vaccine-findslots.git"
+  },
+  "author": "shine abraham",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shineabraham/vaccine-findslots/issues"
+  },
+  "homepage": "https://github.com/shineabraham/vaccine-findslots#readme",
+  "dependencies": {
+    "moment": "^2.29.1"
+  }
+}
